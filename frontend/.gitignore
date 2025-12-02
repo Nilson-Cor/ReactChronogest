@@ -1,0 +1,16 @@
+# Ignorar TODOS los node_modules
+node_modules/
+
+# Ignorar package-lock en cualquier lugar
+package-lock.json
+
+frontend/package-lock.json
+frontend/backend/package-lock.json
+
+# Ignorar archivos de entorno
+.env
+frontend/.env
+backend/.env
+
+# Ignorar logs
+*.log
