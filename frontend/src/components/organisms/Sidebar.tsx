@@ -29,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role, activeMenu, onMenuClick, userNa
       { id: 'fichas', label: 'Gestión de Fichas', icon: BookOpen },
       { id: 'horarios', label: 'Gestión de Horarios', icon: Calendar },
       { id: 'solicitudes', label: 'Solicitudes de Cambio', icon: AlertCircle },
-      { id: 'programas', label: 'Gestión de Programas', icon: BookOpen },
+      { id: 'programas', label: 'Gestión de Áreas y Programas', icon: BookOpen },
       { id: 'ambientes', label: 'Gestión de Ambientes', icon: Home }
     ]
   };
