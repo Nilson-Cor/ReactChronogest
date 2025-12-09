@@ -8,6 +8,7 @@ import RegisterForm from '../organisms/RegisterForm';
 import UserTable from '../organisms/UserTable';
 import { API_URL } from '../../config';
 import CentrosManagement from '../organisms/CentrosManagement';
+import AreasProgramasManagement from '../organisms/AreasProgramasManagement';
 
 interface RegisteredUser {
   id: string;
@@ -266,13 +267,7 @@ const ChronogestApp: React.FC = () => {
               </div>
             )}
 
-            {activeMenu === 'programas' && (
-              <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Gestión de Programas</h2>
-                <p className="text-gray-600">Contenido en desarrollo</p>
-              </div>
-            )}
+            {activeMenu === 'programas' && <AreasProgramasManagement />}
 
             {activeMenu === 'ambientes' && (
               <div className="bg-white rounded-lg shadow-md p-8 text-center">
