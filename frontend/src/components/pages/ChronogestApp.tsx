@@ -6,6 +6,8 @@ import Sidebar from '../organisms/Sidebar';
 import LoginForm from '../organisms/LoginForm';
 import RegisterForm from '../organisms/RegisterForm';
 import UserTable from '../organisms/UserTable';
+import { API_URL } from '../../config';
+import CentrosManagement from '../organisms/CentrosManagement';
 
 interface RegisteredUser {
   id: string;
@@ -50,7 +52,7 @@ const ChronogestApp: React.FC = () => {
     setLoadingUsers(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/users', {
+      const response = await fetch(`${API_URL}/api/users`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -102,7 +104,7 @@ const ChronogestApp: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/users/${id}`, {
+      const response = await fetch(`${API_URL}/api/users/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -233,13 +235,8 @@ const ChronogestApp: React.FC = () => {
             )}
 
             {/* Resto de secciones */}
-            {activeMenu === 'centros' && (
-              <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Gestión de Centros</h2>
-                <p className="text-gray-600">Contenido en desarrollo</p>
-              </div>
-            )}
+            {activeMenu === 'centros' && <CentrosManagement />}
+            
 
             {activeMenu === 'fichas' && (
               <div className="bg-white rounded-lg shadow-md p-8 text-center">

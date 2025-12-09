@@ -3,6 +3,7 @@ import { User } from '../../types';
 import FormField from '../molecules/FormField';
 import PasswordField from '../molecules/PasswordField';
 import Button from '../atoms/Button';
+import { API_URL } from '../../config';
 
 interface LoginFormProps {
   onLogin: (user: User) => void;
@@ -20,7 +21,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick }) => {
 
     try {
       // Llamar al API
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
