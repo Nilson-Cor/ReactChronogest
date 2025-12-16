@@ -2,6 +2,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const horariosRoutes = require('./routes/horarios');
 
 // Add console.logs to debug
 const authRoutes = require('./routes/auth');
@@ -16,10 +17,12 @@ const PORT = process.env.PORT || 5000;
 // Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Rutas
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/horarios', horariosRoutes);
 
 // Ruta de prueba
 app.get('/api/test', (req, res) => {
