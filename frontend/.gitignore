@@ -7,6 +7,5 @@ package-lock.json
 frontend/package-lock.json
 backend/package-lock.json
 
-
 # Ignorar logs
 *.log
