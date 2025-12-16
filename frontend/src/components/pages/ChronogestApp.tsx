@@ -12,6 +12,7 @@ import AreasProgramasManagement from '../organisms/AreasProgramasManagement';
 import HorariosManagement from '../organisms/HorariosManagement';
 import HorarioInstructor from '../organisms/HorarioInstructor';
 import HorarioAprendiz from '../organisms/HorarioAprendiz';
+import GestionAmbientes from '../organisms/GestionAmbientes';
 
 interface AppUser extends User {
   id?: string;
@@ -189,13 +190,13 @@ const ChronogestApp: React.FC = () => {
             </div>
           )}
 
-          {activeMenu === 'ambientes' && (
-            <div className="bg-white p-8 rounded shadow text-center">
-              <Home className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <p>Gestión de Ambientes</p>
-            </div>
-          )}
-        </main>
+            {activeMenu === 'programas' && <AreasProgramasManagement />}
+
+            {activeMenu === 'ambientes' && <GestionAmbientes />}
+              
+            
+          </div>
+        </div>
       </div>
     </div>
   );
