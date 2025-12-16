@@ -60,35 +60,30 @@ const CentrosManagement: React.FC = () => {
     ubicacion: ''
   });
 
-  // Cargar centros desde storage al iniciar
   useEffect(() => {
     loadCentros();
   }, []);
 
-  const loadCentros = async () => {
+  const loadCentros = () => {
     try {
-      const result = await window.storage.list('centro:');
-      if (result && result.keys) {
-        const centrosData = await Promise.all(
-          result.keys.map(async (key) => {
-            const data = await window.storage.get(key);
-            return data ? JSON.parse(data.value) : null;
-          })
-        );
-        setCentros(centrosData.filter(Boolean));
-      }
+      const keys = Object.keys(localStorage).filter(key => key.startsWith('centro:'));
+      const centrosData = keys.map(key => {
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : null;
+      }).filter((centro): centro is Centro => centro !== null);
+      setCentros(centrosData);
     } catch (error) {
       console.log('No hay centros guardados aún');
       setCentros([]);
     }
   };
 
-  const saveCentro = async (centro: Centro) => {
-    await window.storage.set(`centro:${centro.id}`, JSON.stringify(centro));
+  const saveCentro = (centro: Centro) => {
+    localStorage.setItem(`centro:${centro.id}`, JSON.stringify(centro));
   };
 
-  const deleteCentro = async (id: string) => {
-    await window.storage.delete(`centro:${id}`);
+  const deleteCentro = (id: string) => {
+    localStorage.removeItem(`centro:${id}`);
   };
 
   const toggleCentro = (id: string) => {
@@ -101,7 +96,7 @@ const CentrosManagement: React.FC = () => {
     setExpandedCentros(newExpanded);
   };
 
-  const handleCreateCentro = async () => {
+  const handleCreateCentro = () => {
     if (!centroForm.nombre || !centroForm.codigo || !centroForm.ciudad || 
         !centroForm.direccion || !centroForm.telefono || !centroForm.email) {
       alert('Por favor completa todos los campos');
@@ -115,8 +110,8 @@ const CentrosManagement: React.FC = () => {
       createdAt: new Date().toISOString()
     };
 
-    await saveCentro(newCentro);
-    await loadCentros();
+    saveCentro(newCentro);
+    loadCentros();
     
     setShowCentroForm(false);
     setCentroForm({
@@ -129,7 +124,7 @@ const CentrosManagement: React.FC = () => {
     });
   };
 
-  const handleUpdateCentro = async () => {
+  const handleUpdateCentro = () => {
     if (!editingCentro) return;
 
     if (!centroForm.nombre || !centroForm.codigo || !centroForm.ciudad || 
@@ -143,8 +138,8 @@ const CentrosManagement: React.FC = () => {
       ...centroForm
     };
 
-    await saveCentro(updatedCentro);
-    await loadCentros();
+    saveCentro(updatedCentro);
+    loadCentros();
     
     setEditingCentro(null);
     setCentroForm({
@@ -157,16 +152,16 @@ const CentrosManagement: React.FC = () => {
     });
   };
 
-  const handleDeleteCentro = async (id: string) => {
+  const handleDeleteCentro = (id: string) => {
     if (!window.confirm('¿Estás seguro de eliminar este centro? Se eliminarán también todos sus tecnoparques.')) {
       return;
     }
 
-    await deleteCentro(id);
-    await loadCentros();
+    deleteCentro(id);
+    loadCentros();
   };
 
-  const handleCreateTecnoparque = async () => {
+  const handleCreateTecnoparque = () => {
     if (!selectedCentro) return;
 
     if (!tecnoparqueForm.nombre || !tecnoparqueForm.descripcion || !tecnoparqueForm.ubicacion) {
@@ -188,8 +183,8 @@ const CentrosManagement: React.FC = () => {
       tecnoparques: [...centro.tecnoparques, newTecnoparque]
     };
 
-    await saveCentro(updatedCentro);
-    await loadCentros();
+    saveCentro(updatedCentro);
+    loadCentros();
     
     setShowTecnoparqueForm(false);
     setSelectedCentro(null);
@@ -200,7 +195,7 @@ const CentrosManagement: React.FC = () => {
     });
   };
 
-  const handleUpdateTecnoparque = async () => {
+  const handleUpdateTecnoparque = () => {
     if (!editingTecnoparque || !selectedCentro) return;
 
     if (!tecnoparqueForm.nombre || !tecnoparqueForm.descripcion || !tecnoparqueForm.ubicacion) {
@@ -220,8 +215,8 @@ const CentrosManagement: React.FC = () => {
       tecnoparques: updatedTecnoparques
     };
 
-    await saveCentro(updatedCentro);
-    await loadCentros();
+    saveCentro(updatedCentro);
+    loadCentros();
     
     setEditingTecnoparque(null);
     setSelectedCentro(null);
@@ -232,7 +227,7 @@ const CentrosManagement: React.FC = () => {
     });
   };
 
-  const handleDeleteTecnoparque = async (centroId: string, tecnoparqueId: string) => {
+  const handleDeleteTecnoparque = (centroId: string, tecnoparqueId: string) => {
     if (!window.confirm('¿Estás seguro de eliminar este tecnoparque?')) {
       return;
     }
@@ -245,8 +240,8 @@ const CentrosManagement: React.FC = () => {
       tecnoparques: centro.tecnoparques.filter(t => t.id !== tecnoparqueId)
     };
 
-    await saveCentro(updatedCentro);
-    await loadCentros();
+    saveCentro(updatedCentro);
+    loadCentros();
   };
 
   const startEditCentro = (centro: Centro) => {
@@ -292,7 +287,6 @@ const CentrosManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Lista de Centros */}
       <div className="space-y-4">
         {centros.length === 0 ? (
           <div className="text-center py-12 bg-gray-50 rounded-lg">
@@ -303,7 +297,6 @@ const CentrosManagement: React.FC = () => {
         ) : (
           centros.map(centro => (
             <div key={centro.id} className="border border-gray-200 rounded-lg overflow-hidden">
-              {/* Header del Centro */}
               <div className="bg-gray-50 p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 flex-1">
@@ -349,7 +342,6 @@ const CentrosManagement: React.FC = () => {
                 </div>
               </div>
 
-              {/* Detalles expandidos */}
               {expandedCentros.has(centro.id) && (
                 <div className="p-4 bg-white">
                   <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
@@ -367,7 +359,6 @@ const CentrosManagement: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Tecnoparques */}
                   <div className="border-t pt-4">
                     <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
                       <MapPin className="w-4 h-4" />
@@ -413,7 +404,6 @@ const CentrosManagement: React.FC = () => {
         )}
       </div>
 
-      {/* Modal: Formulario de Centro */}
       {(showCentroForm || editingCentro) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -533,7 +523,6 @@ const CentrosManagement: React.FC = () => {
         </div>
       )}
 
-      {/* Modal: Formulario de Tecnoparque */}
       {(showTecnoparqueForm || editingTecnoparque) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
