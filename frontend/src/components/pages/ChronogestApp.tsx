@@ -9,6 +9,7 @@ import UserTable from '../organisms/UserTable';
 import { API_URL } from '../../config';
 import CentrosManagement from '../organisms/CentrosManagement';
 import AreasProgramasManagement from '../organisms/AreasProgramasManagement';
+import GestionAmbientes from '../organisms/GestionAmbientes';
 
 interface RegisteredUser {
   id: string;
@@ -269,13 +270,9 @@ const ChronogestApp: React.FC = () => {
 
             {activeMenu === 'programas' && <AreasProgramasManagement />}
 
-            {activeMenu === 'ambientes' && (
-              <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                <Home className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Gestión de Ambientes</h2>
-                <p className="text-gray-600">Contenido en desarrollo</p>
-              </div>
-            )}
+            {activeMenu === 'ambientes' && <GestionAmbientes />}
+              
+            
           </div>
         </div>
       </div>
