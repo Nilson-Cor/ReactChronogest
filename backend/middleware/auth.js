@@ -1,24 +1,33 @@
-// middleware/auth.js
 const jwt = require('jsonwebtoken');
 
-module.exports = (req, res, next) => {
+function verificarToken(req, res, next) {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Token no proporcionado' 
+    if (!authHeader) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token no proporcionado'
       });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'tu_secreto_jwt');
+    const token = authHeader.split(' ')[1];
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || 'tu_secreto_jwt'
+    );
+
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ 
-      success: false, 
-      message: 'Token inválido' 
+    return res.status(401).json({
+      success: false,
+      message: 'Token inválido'
     });
   }
+}
+
+module.exports = {
+  verificarToken
 };

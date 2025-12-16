@@ -2,15 +2,16 @@ const db = require('../config/database');
 const bcrypt = require('bcrypt');
 
 exports.getAllUsers = async (req, res) => {
-  try {
-    const [users] = await db.query(
-      `SELECT id, usuario as username, Rol as role, nombre as fullName, 
-              correo as email, telefono as phone, tipoDocumento as documentType, 
-              NumeroDocumento as documentNumber, activo 
-       FROM usuarios 
-       WHERE activo = 1 
-       ORDER BY id DESC`
-    );
+  try {
+    // ASUME QUE EL ROL 'Instructor' ESTÁ ESCRITO EXACTAMENTE ASÍ EN LA BASE DE DATOS
+    const [users] = await db.query(
+      `SELECT id, usuario as username, Rol as role, nombre as fullName, 
+        correo as email, telefono as phone, tipoDocumento as documentType, 
+        NumeroDocumento as documentNumber, activo 
+       FROM usuarios 
+       WHERE activo = 1 AND Rol = 'instructor' 
+       ORDER BY id DESC`
+    );
 
     const formattedUsers = users.map(user => ({
       id: user.id.toString(),
