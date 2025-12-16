@@ -1,7 +1,6 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  # Servicio de MySQL
   mysql:
     image: mysql:8.0
     container_name: chronogest_mysql
@@ -14,9 +13,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      # Importa automáticamente el SQL al iniciar
       - ./chronogest_react.sql:/docker-entrypoint-initdb.d/init.sql:ro
-      # Persiste los datos
       - mysql_data:/var/lib/mysql
     networks:
       - chronogest_network
@@ -26,43 +23,34 @@ services:
       timeout: 5s
       retries: 5
 
-  # Servicio del Backend
   backend:
-    build: ./backend
+    build:
+      context: ./backend
     container_name: chronogest_backend
     restart: always
     ports:
       - "5000:5000"
-    environment:
-      DB_HOST: mysql
-      DB_USER: chronogest
-      DB_PASSWORD: chronogest123
-      DB_NAME: chronogest_bd
-      DB_PORT: 3306
-      PORT: 5000
+    env_file:
+      - ./backend/.env
     depends_on:
       mysql:
         condition: service_healthy
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     networks:
       - chronogest_network
 
-  # Servicio del Frontend (opcional)
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
     container_name: chronogest_frontend
     restart: always
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    networks:
-      - chronogest_network
+    env_file:
+      - ./frontend/.env
     depends_on:
       - backend
+    networks:
+      - chronogest_network
 
 volumes:
   mysql_data:
