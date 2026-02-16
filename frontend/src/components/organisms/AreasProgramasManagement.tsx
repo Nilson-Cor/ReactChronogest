@@ -72,15 +72,15 @@ const AreasProgramasManagement: React.FC = () => {
 
   const loadAreas = async () => {
     try {
-      const result = await window.storage.list('area:');
-      if (result && result.keys) {
-        const areasData = await Promise.all(
-          result.keys.map(async (key) => {
-            const data = await window.storage.get(key);
-            return data ? JSON.parse(data.value) : null;
-          })
-        );
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('area:'));
+      if (keys.length > 0) {
+        const areasData = keys.map(key => {
+          const data = localStorage.getItem(key);
+          return data ? JSON.parse(data) : null;
+        });
         setAreas(areasData.filter(Boolean));
+      } else {
+        setAreas([]);
       }
     } catch (error) {
       console.log('No hay áreas guardadas aún');
@@ -89,11 +89,11 @@ const AreasProgramasManagement: React.FC = () => {
   };
 
   const saveArea = async (area: Area) => {
-    await window.storage.set(`area:${area.id}`, JSON.stringify(area));
+    localStorage.setItem(`area:${area.id}`, JSON.stringify(area));
   };
 
   const deleteArea = async (id: string) => {
-    await window.storage.delete(`area:${id}`);
+    localStorage.removeItem(`area:${id}`);
   };
 
   const toggleArea = (id: string) => {
@@ -107,12 +107,12 @@ const AreasProgramasManagement: React.FC = () => {
   };
 
   const handleCreateArea = async () => {
-    if (!areaForm.nombre || !areaForm.codigo || !areaForm.descripcion || 
-        !areaForm.coordinador || !areaForm.email || !areaForm.telefono) {
+    if (!areaForm.nombre || !areaForm.codigo || !areaForm.descripcion ||
+      !areaForm.coordinador || !areaForm.email || !areaForm.telefono) {
       alert('Por favor completa todos los campos');
       return;
     }
-    
+
     const newArea: Area = {
       id: Date.now().toString(),
       ...areaForm,
@@ -122,7 +122,7 @@ const AreasProgramasManagement: React.FC = () => {
 
     await saveArea(newArea);
     await loadAreas();
-    
+
     setShowAreaForm(false);
     setAreaForm({
       nombre: '',
@@ -137,8 +137,8 @@ const AreasProgramasManagement: React.FC = () => {
   const handleUpdateArea = async () => {
     if (!editingArea) return;
 
-    if (!areaForm.nombre || !areaForm.codigo || !areaForm.descripcion || 
-        !areaForm.coordinador || !areaForm.email || !areaForm.telefono) {
+    if (!areaForm.nombre || !areaForm.codigo || !areaForm.descripcion ||
+      !areaForm.coordinador || !areaForm.email || !areaForm.telefono) {
       alert('Por favor completa todos los campos');
       return;
     }
@@ -150,7 +150,7 @@ const AreasProgramasManagement: React.FC = () => {
 
     await saveArea(updatedArea);
     await loadAreas();
-    
+
     setEditingArea(null);
     setAreaForm({
       nombre: '',
@@ -174,8 +174,8 @@ const AreasProgramasManagement: React.FC = () => {
   const handleCreatePrograma = async () => {
     if (!selectedArea) return;
 
-    if (!programaForm.nombre || !programaForm.codigo || !programaForm.duracion || 
-        !programaForm.nivel || !programaForm.descripcion) {
+    if (!programaForm.nombre || !programaForm.codigo || !programaForm.duracion ||
+      !programaForm.nivel || !programaForm.descripcion) {
       alert('Por favor completa todos los campos');
       return;
     }
@@ -196,7 +196,7 @@ const AreasProgramasManagement: React.FC = () => {
 
     await saveArea(updatedArea);
     await loadAreas();
-    
+
     setShowProgramaForm(false);
     setSelectedArea(null);
     setProgramaForm({
@@ -211,8 +211,8 @@ const AreasProgramasManagement: React.FC = () => {
   const handleUpdatePrograma = async () => {
     if (!editingPrograma || !selectedArea) return;
 
-    if (!programaForm.nombre || !programaForm.codigo || !programaForm.duracion || 
-        !programaForm.nivel || !programaForm.descripcion) {
+    if (!programaForm.nombre || !programaForm.codigo || !programaForm.duracion ||
+      !programaForm.nivel || !programaForm.descripcion) {
       alert('Por favor completa todos los campos');
       return;
     }
@@ -231,7 +231,7 @@ const AreasProgramasManagement: React.FC = () => {
 
     await saveArea(updatedArea);
     await loadAreas();
-    
+
     setEditingPrograma(null);
     setSelectedArea(null);
     setProgramaForm({

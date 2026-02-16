@@ -67,15 +67,15 @@ const CentrosManagement: React.FC = () => {
 
   const loadCentros = async () => {
     try {
-      const result = await window.storage.list('centro:');
-      if (result && result.keys) {
-        const centrosData = await Promise.all(
-          result.keys.map(async (key) => {
-            const data = await window.storage.get(key);
-            return data ? JSON.parse(data.value) : null;
-          })
-        );
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('centro:'));
+      if (keys.length > 0) {
+        const centrosData = keys.map(key => {
+          const data = localStorage.getItem(key);
+          return data ? JSON.parse(data) : null;
+        });
         setCentros(centrosData.filter(Boolean));
+      } else {
+        setCentros([]);
       }
     } catch (error) {
       console.log('No hay centros guardados aún');
@@ -84,11 +84,11 @@ const CentrosManagement: React.FC = () => {
   };
 
   const saveCentro = async (centro: Centro) => {
-    await window.storage.set(`centro:${centro.id}`, JSON.stringify(centro));
+    localStorage.setItem(`centro:${centro.id}`, JSON.stringify(centro));
   };
 
   const deleteCentro = async (id: string) => {
-    await window.storage.delete(`centro:${id}`);
+    localStorage.removeItem(`centro:${id}`);
   };
 
   const toggleCentro = (id: string) => {
@@ -102,12 +102,12 @@ const CentrosManagement: React.FC = () => {
   };
 
   const handleCreateCentro = async () => {
-    if (!centroForm.nombre || !centroForm.codigo || !centroForm.ciudad || 
-        !centroForm.direccion || !centroForm.telefono || !centroForm.email) {
+    if (!centroForm.nombre || !centroForm.codigo || !centroForm.ciudad ||
+      !centroForm.direccion || !centroForm.telefono || !centroForm.email) {
       alert('Por favor completa todos los campos');
       return;
     }
-    
+
     const newCentro: Centro = {
       id: Date.now().toString(),
       ...centroForm,
@@ -117,7 +117,7 @@ const CentrosManagement: React.FC = () => {
 
     await saveCentro(newCentro);
     await loadCentros();
-    
+
     setShowCentroForm(false);
     setCentroForm({
       nombre: '',
@@ -132,8 +132,8 @@ const CentrosManagement: React.FC = () => {
   const handleUpdateCentro = async () => {
     if (!editingCentro) return;
 
-    if (!centroForm.nombre || !centroForm.codigo || !centroForm.ciudad || 
-        !centroForm.direccion || !centroForm.telefono || !centroForm.email) {
+    if (!centroForm.nombre || !centroForm.codigo || !centroForm.ciudad ||
+      !centroForm.direccion || !centroForm.telefono || !centroForm.email) {
       alert('Por favor completa todos los campos');
       return;
     }
@@ -145,7 +145,7 @@ const CentrosManagement: React.FC = () => {
 
     await saveCentro(updatedCentro);
     await loadCentros();
-    
+
     setEditingCentro(null);
     setCentroForm({
       nombre: '',
@@ -190,7 +190,7 @@ const CentrosManagement: React.FC = () => {
 
     await saveCentro(updatedCentro);
     await loadCentros();
-    
+
     setShowTecnoparqueForm(false);
     setSelectedCentro(null);
     setTecnoparqueForm({
@@ -222,7 +222,7 @@ const CentrosManagement: React.FC = () => {
 
     await saveCentro(updatedCentro);
     await loadCentros();
-    
+
     setEditingTecnoparque(null);
     setSelectedCentro(null);
     setTecnoparqueForm({

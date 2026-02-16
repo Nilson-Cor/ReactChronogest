@@ -1,21 +1,22 @@
-const db = require('../config/database');
+const db = require('../config/db');
 const bcrypt = require('bcrypt');
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const [users] = await db.query(
-      `SELECT id, usuario as username, Rol as role, nombre as fullName, 
+    // SQLite síncrono - usar prepare().all()
+    const users = db.prepare(`
+      SELECT id, usuario as username, Rol as role, nombre as fullName, 
               correo as email, telefono as phone, tipoDocumento as documentType, 
-              NumeroDocumento as documentNumber, activo 
+              numeroDocumento as documentNumber, activo 
        FROM usuarios 
        WHERE activo = 1 
-       ORDER BY id DESC`
-    );
+       ORDER BY id DESC
+    `).all();
 
     const formattedUsers = users.map(user => ({
       id: user.id.toString(),
       username: user.username || '',
-      password: '', 
+      password: '',
       role: user.role || '',
       fullName: user.fullName || '',
       email: user.email || '',
@@ -33,9 +34,9 @@ exports.getAllUsers = async (req, res) => {
 
   } catch (error) {
     console.error('Error obteniendo usuarios:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error en el servidor' 
+    res.status(500).json({
+      success: false,
+      message: 'Error en el servidor'
     });
   }
 };
@@ -44,26 +45,25 @@ exports.getUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [users] = await db.query(
-      `SELECT id, usuario as username, Rol as role, nombre as fullName, 
+    // SQLite síncrono - usar prepare().get()
+    const user = db.prepare(`
+      SELECT id, usuario as username, Rol as role, nombre as fullName, 
               correo as email, telefono as phone, tipoDocumento as documentType, 
-              NumeroDocumento as documentNumber 
+              numeroDocumento as documentNumber 
        FROM usuarios 
-       WHERE id = ? AND activo = 1`,
-      [id]
-    );
+       WHERE id = ? AND activo = 1
+    `).get(id);
 
-    if (users.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Usuario no encontrado' 
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
       });
     }
 
-    const user = users[0];
     res.json({
-        success: true,
-        user: {
+      success: true,
+      user: {
         id: user.id.toString(),
         username: user.username || '',
         role: user.role || '',
@@ -72,82 +72,78 @@ exports.getUserById = async (req, res) => {
         phone: user.phone || '',
         documentType: user.documentType || '',
         documentNumber: user.documentNumber ? user.documentNumber.toString() : ''
-    }
+      }
     });
 
-} catch (error) {
+  } catch (error) {
     console.error('Error obteniendo usuario:', error);
-    res.status(500).json({ 
-        success: false, 
-        message: 'Error en el servidor' 
+    res.status(500).json({
+      success: false,
+      message: 'Error en el servidor'
     });
-}
+  }
 };
 
 exports.updateUser = async (req, res) => {
-try {
+  try {
     const { id } = req.params;
     const { fullName, email, phone, role } = req.body;
 
-    const [result] = await db.query(
-        `UPDATE usuarios 
+    // SQLite síncrono - usar prepare().run()
+    const result = db.prepare(`
+        UPDATE usuarios 
         SET nombre = ?, correo = ?, telefono = ?, Rol = ? 
-        WHERE id = ?`,
-        [fullName, email, phone, role, id]
-    );
+        WHERE id = ?
+    `).run(fullName, email, phone, role, id);
 
-    if (result.affectedRows === 0) {
-        return res.status(404).json({ 
-        success: false, 
-        message: 'Usuario no encontrado' 
-        });
+    if (result.changes === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
+      });
     }
 
     res.json({
-        success: true,
-        message: 'Usuario actualizado exitosamente'
+      success: true,
+      message: 'Usuario actualizado exitosamente'
     });
 
-} catch (error) {
+  } catch (error) {
     console.error('Error actualizando usuario:', error);
-    res.status(500).json({ 
-        success: false, 
-        message: 'Error en el servidor' 
+    res.status(500).json({
+      success: false,
+      message: 'Error en el servidor'
     });
-}
+  }
 };
 
 exports.deleteUser = async (req, res) => {
-try {
+  try {
     const { id } = req.params;
 
-    const [users] = await db.query(
-        'SELECT id FROM usuarios WHERE id = ?',
-        [id]
-    );
+    // SQLite síncrono - verificar si existe
+    const user = db.prepare('SELECT id FROM usuarios WHERE id = ?').get(id);
 
-    if (users.length === 0) {
-        return res.status(404).json({ 
-        success: false, 
-        message: 'Usuario no encontrado' 
-        });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
+      });
     }
 
-    const [result] = await db.query(
-        'UPDATE usuarios SET activo = 0 WHERE id = ?',
-        [id]
-    );
+    // SQLite síncrono - soft delete
+    db.prepare('UPDATE usuarios SET activo = 0 WHERE id = ?').run(id);
 
     res.json({
-        success: true,
-        message: 'Usuario eliminado exitosamente'
+      success: true,
+      message: 'Usuario eliminado exitosamente'
     });
 
-} catch (error) {
+  } catch (error) {
     console.error('Error eliminando usuario:', error);
-    res.status(500).json({ 
-        success: false, 
-        message: 'Error en el servidor' 
+    res.status(500).json({
+      success: false,
+      message: 'Error en el servidor'
     });
-}
+  }
 };

@@ -37,7 +37,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick }) => {
       if (data.success) {
         // Guardar token en localStorage
         localStorage.setItem('token', data.token);
-        
+
         // Crear objeto User compatible con tu interfaz
         const user: User = {
           username: data.user.username,
@@ -65,7 +65,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick }) => {
       <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
         Inicio de sesión de usuarios
       </h2>
-      
+
       <div className="space-y-6">
         <FormField
           label="Usuario"
@@ -89,9 +89,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick }) => {
           </div>
         )}
 
-        <Button 
-          onClick={handleSubmit} 
-          variant="primary" 
+        <Button
+          onClick={handleSubmit}
+          variant="primary"
           className="w-full py-3"
           disabled={loading}
         >
@@ -100,9 +100,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick }) => {
 
         <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
           <p className="text-sm text-gray-600">
-            <strong>Usuarios de prueba:</strong><br/>
-            Instructor: instructor1 / instructor123<br/>
-            Aprendiz: aprendiz1 / aprendiz123<br/>
+            <strong>Usuarios de prueba:</strong><br />
+            Instructor: instructor1 / instructor123<br />
+            Aprendiz: aprendiz1 / aprendiz123<br />
             Admin: admin1 / admin123
           </p>
         </div>
@@ -111,7 +111,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick }) => {
       <div className="mt-8 text-center">
         <p className="text-sm text-gray-600">
           ¿Eres administrador?{' '}
-          <button 
+          <button
             onClick={onRegisterClick}
             className="text-green-600 hover:text-green-700 font-medium"
           >
